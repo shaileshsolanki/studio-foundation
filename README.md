@@ -105,9 +105,25 @@ in sync with the kit.
 ## Deploy
 
 The build is a static SPA: `npm run build` emits everything to `dist/`. Any static
-host works. Two zero-config options are committed and ready:
+host works.
 
-**Recommended: Vercel** (`vercel.json`)
+### Live site (active deploy)
+
+The site is deployed to **GitHub Pages** and updates automatically on every push to
+`main`:
+
+**🔗 https://shaileshsolanki.github.io/studio-foundation/**
+
+How it works — `.github/workflows/deploy.yml`:
+- On push to `main` (or manual **Run workflow**), GitHub Actions runs `npm ci` + `npm run build` and publishes `dist/` to Pages.
+- Pages serves project sites under `/<repo>/`, so the workflow sets `VITE_BASE=/<repo>/` at build time; `vite.config.js` reads it (defaults to `/` locally and for Vercel/Netlify).
+- No secrets or tokens needed — uses the built-in `GITHUB_TOKEN` with `pages: write`.
+
+To reproduce on a fresh repo: push the code, then enable Pages with the *GitHub Actions* source (`gh api -X POST repos/<owner>/<repo>/pages -f build_type=workflow`, or **Settings → Pages → Source: GitHub Actions**). The next push deploys.
+
+### Alternative hosts (committed, zero-config)
+
+**Vercel** (`vercel.json`)
 - Connect the repo in the Vercel dashboard, or run `npx vercel` / `npx vercel --prod`.
 - Build command `npm run build`, output `dist`, framework `vite` — already declared.
 - A catch-all rewrite to `/index.html` is configured so client-side routes resolve.
@@ -116,11 +132,11 @@ host works. Two zero-config options are committed and ready:
 - Connect the repo, or run `npx netlify deploy --prod`.
 - Build command and `publish = "dist"` plus an SPA redirect are already declared.
 
-**Why Vercel as the default:** first-class Vite support, instant preview deploys per
-PR (useful for design review on client work), and a generous free tier. Netlify is an
-equivalent fallback if a client already standardizes on it. **Final hosting choice is
-the CEO's call** — both paths are wired so switching is a dashboard decision, not a
-code change.
+**Hosting decision (CEO's call):** GitHub Pages is live now as the zero-cost default
+so the foundation has a real, always-on URL. For client work, **Vercel** is the
+recommendation — first-class Vite support, instant per-PR preview deploys (useful for
+design review), generous free tier — with Netlify as an equivalent fallback. All three
+paths are wired, so switching is a dashboard decision, not a code change.
 
 ### Local "deploy" verification
 
