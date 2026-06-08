@@ -35,3 +35,7 @@ pnpm-debug.log*
 # Vercel / Netlify local state
 .vercel
 .netlify
+.gstack/
+
+# QA screenshots (local evidence, not source)
+.qa-shots/

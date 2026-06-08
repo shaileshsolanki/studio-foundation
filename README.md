@@ -34,11 +34,21 @@ npm run dev      # start the dev server with HMR → http://localhost:5173
 ```
 .
 ├── index.html          # App entry HTML (Vite injects the bundle)
-├── public/             # Static assets served as-is (favicon, etc.)
+├── public/             # Static assets served as-is (favicon, og image)
 ├── src/
-│   ├── main.jsx        # React root render
-│   ├── App.jsx         # Root component (currently the placeholder page)
-│   └── index.css       # Tailwind entry (@import "tailwindcss")
+│   ├── main.jsx        # React root render (+ ?gallery route switch)
+│   ├── App.jsx         # Portfolio site, composed from components/
+│   ├── Gallery.jsx     # Living component-library docs (see below)
+│   ├── content.js      # Centralised site copy (text, services, work)
+│   ├── useReveal.js    # Scroll-reveal hook (IntersectionObserver)
+│   ├── index.css       # Tailwind entry + design tokens + component layer
+│   ├── ui/             # Token-driven primitives (the component library)
+│   │   ├── Button.jsx  Badge.jsx  Card.jsx  Container.jsx
+│   │   ├── Field.jsx   Typography.jsx  cx.js
+│   │   └── index.js    # Barrel — import primitives from here
+│   └── components/     # Page sections built from the ui/ primitives
+│       ├── Nav.jsx  Hero.jsx  Services.jsx  Work.jsx
+│       └── Contact.jsx  Footer.jsx  SectionHeading.jsx  Reveal.jsx
 ├── vite.config.js      # Vite + React + Tailwind plugins
 ├── eslint.config.js    # ESLint flat config
 ├── vercel.json         # Vercel deploy config
@@ -49,8 +59,46 @@ npm run dev      # start the dev server with HMR → http://localhost:5173
 
 Tailwind v4 is wired through the official Vite plugin (`@tailwindcss/vite`) — there
 is **no `tailwind.config.js`**; configuration lives in CSS via `@import "tailwindcss"`
-in `src/index.css`. Add design tokens with `@theme {}` in that file when the design
-system lands.
+in `src/index.css`. Design tokens are declared with `@theme {}` and shared component
+styles live in an `@layer components {}` block in that same file.
+
+---
+
+## Component library
+
+`src/ui/` is a small, token-driven starter kit of accessible React primitives that
+every client project composes from. Visual styling lives in `src/index.css`
+(`@theme` tokens + `@layer components`); the `ui/` modules are the thin, accessible
+wrappers. Import everything from the barrel:
+
+```jsx
+import { Button, Badge, Card, Container, Input, Heading, Lead, Eyebrow } from "./ui/index.js";
+
+<Button as="a" href="#contact">Start a project</Button>
+<Badge dot>Design &amp; build studio</Badge>
+<Input label="Email" type="email" name="email" required />
+```
+
+Available primitives: `Button`, `Badge`, `Card`, `Container`, `Input` (text +
+`as="textarea"`), the `Typography` set (`Display`, `Heading`, `Subheading`, `Title`,
+`Lead`, `Text`, `Eyebrow`), and the `cx` class-name helper.
+
+The portfolio site in `src/components/` is the reference consumer — e.g. `Hero.jsx`
+uses `Button`/`Badge`, `Contact.jsx` uses `Input` + typography, and the section cards
+use the `ui-card` component class.
+
+### Gallery (living docs)
+
+The fastest way to see every primitive and its variants is the gallery page. There's
+no router dependency — `src/main.jsx` switches on a `?gallery` query param:
+
+```bash
+npm run dev
+# then open http://localhost:5173/?gallery
+```
+
+When adding or changing a primitive, add it to `src/Gallery.jsx` so the docs stay
+in sync with the kit.
 
 ---
 
